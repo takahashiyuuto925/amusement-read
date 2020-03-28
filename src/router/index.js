@@ -11,7 +11,13 @@ const routes = [
   {
     path: '/ebook',
     name: 'Ebook',
-    component: () => import('../views/ebook')
+    component: () => import('../views/ebook'),
+    children: [
+      {
+        path: ':fileName',
+        component: () => import('../components/ebook/EbookReader')
+      }
+    ]
   }
 ]
 
