@@ -4,20 +4,26 @@ $ratio: 375 / 10;
     @return $px / $ratio + rem;
 }
 
-@mixin center() {
+@mixin center {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 }
 
-@mixin left() {
+@mixin left {
 	display: flex;
 	justify-content: flex-start;
 	align-items: center;
 }
 
-@mixin end() {
+@mixin end {
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
+}
+
+@mixin ellipsis {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
 }

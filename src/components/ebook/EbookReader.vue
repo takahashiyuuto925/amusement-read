@@ -7,7 +7,7 @@
 <script>
 import { ebookMixin } from '../../utils/mixin'
 import Epub from 'epubjs'
-import { getFontFamily, saveFontFamily, getFontSize, saveFontSize, getTheme, saveTheme } from '../../utils/localstorage'
+import { getFontFamily, saveFontFamily, getFontSize, saveFontSize, getTheme, saveTheme, getLocation } from '../../utils/localstorage'
 
 global.epub = Epub
 export default {
@@ -28,6 +28,7 @@ export default {
                 return this.book.locations.generate(750 * (window.innerWidth / 375) * (getFontSize(this.fileName) / 16))
             }).then(locations => {
                 this.setBookAvailable(true)
+                this.refreshLocation()
             })
         },
         initGesture() {
@@ -55,7 +56,8 @@ export default {
                 height: innerHeight,
                 method: 'default'
             })
-            this.rendition.display().then(() => {
+            const location = getLocation(this.fileName)
+            this.display(location, () => {
                 this.initTheme()
                 this.initFontSize()
                 this.initFontFamily()
@@ -101,17 +103,22 @@ export default {
             });
             this.rendition.themes.select(defaultTheme)
         },
+        
         prevPage() {
             if (this.rendition) {
-                this.rendition.prev()
+                this.rendition.prev().then(() => {
+                    this.refreshLocation()
+                })
                 if (this.menuVisible) {
-                    this.hideTitleAndMenu()  
+                    this.hideTitleAndMenu()
                 }
             }
         },
         nextPage() {
             if (this.rendition) {
-                this.rendition.next()
+                this.rendition.next().then(() => {
+                    this.refreshLocation()
+                })
                 if (this.menuVisible) {
                     this.hideTitleAndMenu()  
                 }
@@ -124,11 +131,6 @@ export default {
             }
             this.setMenuVisible(!this.menuVisible)
         },
-        hideTitleAndMenu() {
-            this.setMenuVisible(false)
-            this.setSettingVisible(-1)
-            this.setFontFamilyVisible(false)
-        }
     }
 }
 </script>

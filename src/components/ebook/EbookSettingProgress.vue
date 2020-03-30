@@ -3,12 +3,12 @@
     <div class="setting-wrapper" v-show="menuVisible && settingVisible === 2">
       <div class="setting-progress">
           <div class="read-time-wrapper">
-              <span class="read-time-text">110</span>
+              <span class="read-time-text">{{ getReadTimeText() }}</span>
               <span class="icon-forward"></span>
           </div>
         <div class="progress-wrapper">
-            <div class="progress-icon-wrapper">
-                <span class="icon-back" @click="prevSection()"></span>
+            <div class="progress-icon-wrapper" @click="prevSection()">
+                <span class="icon-back"></span>
             </div>
           <input
             class="progress"
@@ -22,12 +22,13 @@
             :disabled="!bookAvailable"
             ref="progress"
           />
-            <div class="progress-icon-wrapper">
-                <span class="icon-forward" @click="nextSection()"></span>
+            <div class="progress-icon-wrapper" @click="nextSection()">
+                <span class="icon-forward"></span>
             </div>
         </div>
         <div class="text-wrapper">
-          <span>{{bookAvailable ? progress + '%' : 'loading...'}}</span>
+          <span class="progress-section-text">{{ getSectionName }}</span>
+          <span>({{bookAvailable ? progress + '%' : $t('book.loading')}})</span>
         </div>
       </div>
     </div>
@@ -36,9 +37,32 @@
 
 <script>
 import { ebookMixin } from "../../utils/mixin";
+import { saveLocation, getReadTime } from '../../utils/localstorage';
 export default {
   mixins: [ebookMixin],
+  computed: {
+    getSectionName() {
+      if (this.section) {
+        const sectionInfo = this.currentBook.section(this.section)
+        if (sectionInfo && sectionInfo.href) {
+          return this.currentBook.navigation.get(sectionInfo.href).label
+        }
+      }
+      return ''
+    }
+  },
   methods: {
+    getReadTimeText() {
+      return this.$t('book.haveRead').replace('$1', this.getReadTimeByMinute())
+    },
+    getReadTimeByMinute() {
+      const readTime = getReadTime(this.fileName)
+      if (!readTime) {
+        return 0
+      } else {
+        return Math.ceil(readTime / 60)
+      }
+    },
     onProgressChange(progress) {
         this.setProgress(progress).then(() => {
             this.displayProgress()
@@ -52,13 +76,32 @@ export default {
     },
     displayProgress() {
         const cfi = this.currentBook.locations.cfiFromPercentage(this.progress / 100)
-        this.currentBook.rendition.display(cfi)
+        this.display(cfi)
     },
     updateProgressBg() {
         this.$refs.progress.style.backgroundSize = `${this.progress}% 100%`
     },
-    prevSection() {},
-    nextSection() {}
+    prevSection() {
+      if (this.section > 0 && this.bookAvailable) {
+        this.setSection(this.section - 1).then(() => {
+          this.displaySection()
+        })
+      }
+    },
+    nextSection() {
+      if (this.section < this.currentBook.spine.length - 1 && this.bookAvailable) {
+        this.setSection(this.section + 1).then(() => {
+          this.displaySection()
+        })
+      }
+    },
+    displaySection() {
+      const sectionInfo = this.currentBook.section(this.section)
+      if (sectionInfo && sectionInfo.href) {
+        this.display(sectionInfo.href)
+      }
+    },
+    
   },
   updated() {
       this.updateProgressBg()
@@ -127,9 +170,10 @@ export default {
       color: #333;
       font-size: px2rem(22);
       text-align: center;
-      span {
-        font-size: px2rem(12);
-        @include center;
+      font-size: px2rem(12);
+      @include center;
+      .progress-section-text {
+        @include ellipsis;
       }
     }
   }
