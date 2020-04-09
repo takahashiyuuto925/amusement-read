@@ -17,7 +17,7 @@
         <div class="book-detail-content-list-wrapper">
           <div class="book-detail-content-row">
             <div class="book-detail-content-label">{{$t('detail.publisher')}}</div>
-            <div class="book-detail-content-text">{{publish}}</div>
+            <div class="book-detail-content-text">{{publisher}}</div>
           </div>
           <div class="book-detail-content-row">
             <div class="book-detail-content-label">{{$t('detail.category')}}</div>
@@ -102,20 +102,8 @@ import { shelfMixin } from '../../utils/mixin'
           return []
         }
       },
-      lang() {
-        return this.metadata ? this.metadata.language : '-'
-      },
       isbn() {
         return this.metadata ? this.metadata.identifier : '-'
-      },
-      publisher() {
-        return this.metadata ? this.metadata.publisher : '-'
-      },
-      title() {
-        return this.metadata ? this.metadata.title : ''
-      },
-      author() {
-        return this.metadata ? this.metadata.creator : ''
       },
       inBookShelf() {
         if (this.bookItem && this.shelfList) {
@@ -135,18 +123,18 @@ import { shelfMixin } from '../../utils/mixin'
         book: null,
         metadata: null,
         trialRead: null,
-        cover: null,
         navigation: null,
         displayed: false,
-        audio: null,
-        randomLocation: null,
         description: null,
         toastText: '',
-        trialText: null,
         categoryText: null,
         opf: null,
-        publish: '',
-        filePath: null
+        cover: null,
+        publisher: null,
+        filePath: null,
+        lang: null,
+        title: null,
+        author: null
       }
     },
     methods: {
@@ -243,7 +231,10 @@ import { shelfMixin } from '../../utils/mixin'
           }).then(response => {
             if (response.status === 200 && response.data.code === 0 && response.data.data) {
               const data = response.data.data
-              this.publish = data.publisher
+              this.publisher = data.publisher
+              this.lang = data.language
+              this.title = data.title
+              this.author = data.author
               this.bookItem = data
               this.cover = this.bookItem.cover
               let rootFile = data.rootFile
