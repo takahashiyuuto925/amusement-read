@@ -5,11 +5,11 @@
         <span class="icon-back"></span>
       </div>
       <div class="right">
-        <div class="icon-wrapper">
+        <div class="icon-wrapper"  @click="toShelf">
           <span class="icon-shelf"></span>
         </div>
         <div class="icon-wrapper">
-          <span class="icon-cart"></span>
+          <span class="icon-cart" @click="toHome"></span>
         </div>
         <div class="icon-wrapper">
           <span class="icon-more"></span>
@@ -23,12 +23,26 @@
 import { ebookMixin } from '../../utils/mixin'
 
 export default {
-    mixins: [ ebookMixin ],
-    methods: {
-        back() {
-            console.log('back')
-        }
+  mixins: [ ebookMixin ],
+  methods: {
+    back() {
+      // let fileName = this.$route.params.fileName.substring(5)
+      // this.$router.push({
+      //   path: `/bookmall/detail?fileName=${fileName}`,
+      // })
+      this.$router.go(-1)
+    },
+    toShelf() {
+      this.$router.push({
+        path: '/bookmall/shelf'
+      })
+    },
+    toHome() {
+      this.$router.push({
+        path: '/bookmall/home'
+      })
     }
+  },
 };
 </script>
 
@@ -38,7 +52,7 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 101;
+  z-index: 250;
   width: 100%;
   display: flex;
   height: px2rem(48);
@@ -57,6 +71,12 @@ export default {
     .icon-wrapper {
       flex: 0 0 px2rem(40);
       @include center;
+      .icon-shelf {
+        font-size: px2rem(22);
+      }
+      .icon-cart {
+        font-size: px2rem(22);
+      }
     }
   }
 }

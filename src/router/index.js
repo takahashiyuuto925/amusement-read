@@ -6,7 +6,7 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    redirect: '/ebook'
+    redirect: '/bookmall'
   },
   {
     path: '/ebook',
@@ -17,6 +17,34 @@ const routes = [
         path: ':fileName',
         component: () => import('../components/ebook/EbookReader')
       }
+    ]
+  },
+  {
+    path: '/bookmall',
+    name: 'Bookmall',
+    component: () => import('../views/bookmall/index'),
+    redirect: '/bookmall/shelf',
+    children: [
+      {
+        path: 'home',
+        component: () => import('../views/bookmall/bookmallHome')
+      },
+      {
+        path: 'shelf',
+        component: () => import('../views/bookmall/BookmallShelf')
+      },
+      {
+        path: 'category',
+        component: () => import('../views/bookmall/BookmallCategory')
+      },
+      {
+        path: 'list',
+        component: () => import('../views/bookmall/BookmallList')
+      },
+      {
+        path: 'detail',
+        component: () => import('../views/bookmall/BookmallDetail')
+      },
     ]
   }
 ]

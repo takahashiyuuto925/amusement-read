@@ -130,3 +130,12 @@ export function setBookObject(fileName, key, value) {
   book[key] = value
   setLocalStorage(`${fileName}-info`, book)
 }
+
+
+export function saveBookShelf(shelf) {
+  return setLocalStorage('shelf', shelf)
+}
+
+export function getBookShelf() {
+  return getLocalStorage('shelf')
+}

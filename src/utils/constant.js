@@ -1,3 +1,6 @@
+import { getReadTime } from './localstorage'
+import { realPx } from './utils'
+
 export const FONT_SIZE_LIST = [
     { fontSize: 12 },
     { fontSize: 14 },
@@ -24,7 +27,9 @@ export function themeList(vue) {
         style: {
           body: {
             'color': '#4c5059',
-            'background': '#cecece'
+            'background': '#cecece',
+            'padding-top': `${realPx(48)}px!important`,
+            'padding-bottom': `${realPx(24)}px!important`
           }
         }
       },
@@ -34,7 +39,9 @@ export function themeList(vue) {
         style: {
           body: {
             'color': '#5c5b56',
-            'background': '#c6c2b6'
+            'background': '#c6c2b6',
+            'padding-top': `${realPx(48)}px!important`,
+            'padding-bottom': `${realPx(24)}px!important`
           }
         }
       },
@@ -44,7 +51,9 @@ export function themeList(vue) {
         style: {
           body: {
             'color': '#404c42',
-            'background': '#a9c1a9'
+            'background': '#a9c1a9',
+            'padding-top': `${realPx(48)}px!important`,
+            'padding-bottom': `${realPx(24)}px!important`
           }
         }
       },
@@ -54,7 +63,9 @@ export function themeList(vue) {
         style: {
           body: {
             'color': '#cecece',
-            'background': '#000000'
+            'background': '#000000',
+            'padding-top': `${realPx(48)}px!important`,
+            'padding-bottom': `${realPx(24)}px!important`
           }
         }
       }
@@ -84,4 +95,17 @@ export function removeAllCss() {
   removeCss(`${process.env.VUE_APP_RES_URL}/theme/theme_gold.css`)
   removeCss(`${process.env.VUE_APP_RES_URL}/theme/theme_eye.css`)
   removeCss(`${process.env.VUE_APP_RES_URL}/theme/theme_night.css`)
+}
+
+export function getReadTimeByMinute(fileName) {
+  const readTime = getReadTime(fileName)
+  if (!readTime) {
+    return 0
+  } else {
+    return Math.ceil(readTime / 60)
+  }
+}
+
+export function flatten(array) {
+  return [].concat(...array.map(item => [].concat(item, ...item.subitems)))
 }

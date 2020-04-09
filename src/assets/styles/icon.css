@@ -124,7 +124,7 @@
 .icon-search1:before {
   content: "\e930";
 }
-.icon-selected1:before {
+.icon-selected:before {
   content: "\e931";
 }
 .icon-settings:before {
@@ -198,9 +198,8 @@
 }
 .icon-search:before {
   content: "\e90d";
-  color: #fff;
 }
-.icon-selected:before {
+.icon-selected1:before {
   content: "\e90e";
   color: #515151;
 }

@@ -1,7 +1,7 @@
 const messages = {
   home: {
-    title: 'Book Store',
-    hint: 'Computer Science And Software Engineering',
+    title: 'AS Bookmall',
+    hint: 'Please enter the search content',
     guessYouLike: 'Guess You Like',
     change: 'Change',
     clear: 'Clear',
@@ -20,28 +20,11 @@ const messages = {
     allBook: '$1 books'
   },
   category: {
-    computerScience: 'Computer Science',
-    socialSciences: 'Social Sciences',
-    economics: 'Economics',
-    education: 'Eductation',
-    engineering: 'Engineering',
-    environment: 'Environment',
-    geography: 'Geography',
-    history: 'History',
-    laws: 'Laws',
-    lifeSciences: 'LifeSciences',
-    literature: 'Literature',
-    biomedicine: 'Biomedicine',
-    businessandManagement: 'Business and Management',
-    earthSciences: 'Earth Sciences',
-    materialsScience: 'Materials Science',
-    mathematics: 'Mathematics',
-    medicineAndPublicHealth: 'Medicine And Public Health',
-    philosophy: 'Philosophy',
-    physics: 'Physics',
-    politicalScienceAndInternationalRelations: 'Political Science And International Relations',
-    psychology: 'Psychology',
-    statistics: 'Statistics'
+    xuanhuan: 'Fantasy',
+    qihuan: 'queer',
+    xianxia: 'Immortal Knight',
+    dushi: 'urban',
+    qingxiaoshuo: 'fanfiction',
   },
   shelf: {
     title: 'Book Shelf',
@@ -94,7 +77,6 @@ const messages = {
     startDownload: 'Start download...',
     progressDownload: 'Downloading：$1',
     downloadFirst: 'Please download book first',
-    welcome: 'Welcome to visit iMooc<br>Learning "Practical WeChat Reading - Enterprise Web Book Store of Amami Native APP"<br>--------  Author: Sam  --------',
     find: 'Go to book store',
     changeLanguage: 'Change Language'
   },
@@ -104,22 +86,11 @@ const messages = {
     publisher: 'Publisher',
     category: 'Category',
     ISBN: 'ISBN',
-    trial: 'Trial Reading',
     lang: 'Language',
     loading: 'Loading...',
     read: 'Read',
-    listen: 'Listen',
     addOrRemoveShelf: 'Add to Book Shelf',
     isAddedToShelf: 'Added to BookShelf'
-  },
-  speak: {
-    voice: 'Voice Reading',
-    read: 'Read Originial',
-    settings: 'Settings',
-    timing: 'Timing',
-    current: 'Current Section',
-    requestFailed: 'Request failed!',
-    apply: 'The core technology of semantic analysis is provided by iFLY TEK'
   },
   book: {
     pulldownAddMark: 'Pull down to add bookmark',

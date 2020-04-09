@@ -49,7 +49,6 @@ export default {
         if (this.settingVisible === key) {
           key = -1
           this.setSettingVisible(key)
-          // console.log(this.settingVisible,'变换后')
         } else {
           this.setSettingVisible(key)
         }
@@ -64,7 +63,7 @@ export default {
   position: absolute;
   bottom: 0;
   left: 0;
-  z-index: 102;
+  z-index: 200;
   display: flex;
   width: 100%;
   height: px2rem(48);
@@ -78,10 +77,10 @@ export default {
     flex: 1;
     @include center;
     .icon-progress {
-      font-size: px2rem(28);
+      font-size: px2rem(24);
     }
     .icon-bright {
-      font-size: px2rem(24);
+      font-size: px2rem(22);
     }
   }
 }

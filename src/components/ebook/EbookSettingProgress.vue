@@ -37,32 +37,11 @@
 
 <script>
 import { ebookMixin } from "../../utils/mixin";
-import { saveLocation, getReadTime } from '../../utils/localstorage';
+
 export default {
   mixins: [ebookMixin],
-  computed: {
-    getSectionName() {
-      if (this.section) {
-        const sectionInfo = this.currentBook.section(this.section)
-        if (sectionInfo && sectionInfo.href) {
-          return this.currentBook.navigation.get(sectionInfo.href).label
-        }
-      }
-      return ''
-    }
-  },
   methods: {
-    getReadTimeText() {
-      return this.$t('book.haveRead').replace('$1', this.getReadTimeByMinute())
-    },
-    getReadTimeByMinute() {
-      const readTime = getReadTime(this.fileName)
-      if (!readTime) {
-        return 0
-      } else {
-        return Math.ceil(readTime / 60)
-      }
-    },
+
     onProgressChange(progress) {
         this.setProgress(progress).then(() => {
             this.displayProgress()
@@ -115,7 +94,7 @@ export default {
   position: absolute;
   bottom: px2rem(48);
   left: 0;
-  z-index: 101;
+  z-index: 190;
   width: 100%;
   height: px2rem(90);
   background: #5d6268;
@@ -161,7 +140,6 @@ export default {
         }
       }
     }
-    //show percentage fontsize
     .text-wrapper {
       position: absolute;
       left: 0;

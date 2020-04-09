@@ -3,12 +3,17 @@
         <div class="slide-content-wrapper" v-show="menuVisible && settingVisible === 3">
             <transition name="slide-right">
                 <div class="content" v-if="settingVisible === 3">
-                    <div class="content-page-wrapper">
-                        <div class="content-page"></div>
-                        <div class="content-page-tab">
-                            <div class="content-page-tab-item" :class="{'selected': currentTab === 1}">{{ $t('book.navigation') }}</div>
-                            <div class="content-page-tab-item" :class="{'selected': currentTab === 2}">{{ $t('book.bookmark') }}</div>
+                    <div class="content-page-wrapper" v-if="bookAvailable">
+                        <div class="content-page">
+                            <component :is="currentTab === 1 ? content : bookmark"></component>
                         </div>
+                        <div class="content-page-tab">
+                            <div class="content-page-tab-item" :class="{'selected': currentTab === 1}" @click="selectTab(1)">{{ $t('book.navigation') }}</div>
+                            <div class="content-page-tab-item" :class="{'selected': currentTab === 2}" @click="selectTab(2)">{{ $t('book.bookmark') }}</div>
+                        </div>
+                    </div>
+                    <div class="content-empty" v-else>
+                        <ebook-loading></ebook-loading>
                     </div>
                 </div>
             </transition>
@@ -19,15 +24,27 @@
 
 <script>
 import { ebookMixin } from '../../utils/mixin'
+import EbookSlideContents from './EbookSlideContents'
+import EbookSlideBookmark from './EbookSlideBookmark'
+import EbookLoading from './EbookLoading'
 
 export default {
     mixins: [ebookMixin],
+    components: {
+        EbookLoading
+    },
     data() {
         return {
-            currentTab: 2
+            currentTab: 1,
+            content: EbookSlideContents,
+            bookmark: EbookSlideBookmark
         }
     },
-    methods: {},
+    methods: {
+        selectTab(tab) {
+            this.currentTab = tab
+        }
+    },
 }
 </script>
 
@@ -66,6 +83,11 @@ export default {
                     @include center
                 }
             }
+        }
+        .content-empty {
+            width: 100%;
+            height: 100%;
+            @include center;
         }
     }
     .content-background {

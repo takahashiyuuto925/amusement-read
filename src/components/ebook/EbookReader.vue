@@ -1,6 +1,10 @@
 <template>
   <div class="ebook-reader">
-      <div id="read"></div>
+      <div class="ebook-reader-mask" @click="onMaskClick" @touchmove="move" @touchend="moveEnd"
+        @mousedown.left="onMouseEnter" @mousemove.left="onMouseMove" @mouseup.left="onMouseEnd"></div>
+      <div class="read-wrapper">
+            <div id="read"></div>
+      </div>
   </div>
 </template>
 
@@ -8,22 +12,101 @@
 import { ebookMixin } from '../../utils/mixin'
 import Epub from 'epubjs'
 import { getFontFamily, saveFontFamily, getFontSize, saveFontSize, getTheme, saveTheme, getLocation } from '../../utils/localstorage'
+import { flatten } from '../../utils/constant'
+import { getLocalForage } from '../../utils/localForage'
 
 global.epub = Epub
 export default {
     mixins: [ ebookMixin ],
     mounted() {
-        this.setFileName(this.$route.params.fileName.split('|').join('/')).then(() => {
-            this.initEpub()
+        const books = this.$route.params.fileName.split('|')
+        const fileName = books[1]
+        getLocalForage(fileName, (err, blob) => {
+            if (!err && blob) {
+                this.setFileName(books.join('/')).then(() => {
+                    this.initEpub(blob)
+                })
+            } else {
+                this.setFileName(books.join('/')).then(() => {
+                    const url = process.env.VUE_APP_RES_URL + '/upload/' + this.fileName + '.epub'
+                    this.initEpub(url)
+                })
+            }
         })
+        
     },
     methods: {
-        initEpub() {
-            const url = process.env.VUE_APP_RES_URL + '/defaultBook/' + this.fileName + '.epub'
+        onMouseEnd(e) {
+        if (this.mouseState === 2) {
+          this.setOffsetY(0)
+          this.firstOffsetY = null
+          this.mouseState = 3
+        } else {
+          this.mouseState = 4
+        }
+        const time = e.timeStamp - this.mouseStartTime
+        if (time < 500) {
+          this.mouseState = 4
+        }
+        e.preventDefault()
+        e.stopPropagation()
+      },
+      onMouseMove(e) {
+        if (this.mouseState === 1) {
+          this.mouseState = 2
+        } else if (this.mouseState === 2) {
+          let offsetY = 0
+          if (this.firstOffsetY) {
+            offsetY = e.clientY - this.firstOffsetY
+            this.setOffsetY(offsetY)
+          } else {
+            this.firstOffsetY = e.clientY
+          }
+        }
+        e.preventDefault()
+        e.stopPropagation()
+      },
+      onMouseEnter(e) {
+        this.mouseState = 1
+        this.mouseStartTime = e.timeStamp
+        e.preventDefault()
+        e.stopPropagation()
+      },
+        move(e) {
+            let offsetY = 0
+            if (this.firstOffsetY) {
+                offsetY = e.changedTouches[0].clientY - this.firstOffsetY
+                this.setOffsetY(offsetY)
+            } else {
+                this.firstOffsetY = e.changedTouches[0].clientY
+            }
+            e.preventDefault()
+            e.stopPropagation()
+        },
+        moveEnd(e) {
+            this.setOffsetY(0)
+            this.firstOffsetY = null
+        },
+        onMaskClick(e) {
+            if (this.mouseState && (this.mouseState === 2 || this.mouseState === 3)) {
+                return
+            }
+            const offsetX = e.offsetX
+            const width = window.innerWidth
+            if (offsetX > 0 && offsetX < width * 0.3) {
+                this.prevPage()
+            } else if (offsetX > 0 && offsetX > width * 0.7) {
+                this.nextPage()
+            } else {
+                this.toggleTitleAndMenu()
+            }
+        },
+        initEpub(url) {
             this.book = new Epub(url)
             this.setCurrentBook(this.book)
             this.initRendition()
             this.initGesture()
+            this.parseBook()
             this.book.ready.then(() => {
                 return this.book.locations.generate(750 * (window.innerWidth / 375) * (getFontSize(this.fileName) / 16))
             }).then(locations => {
@@ -31,8 +114,28 @@ export default {
                 this.refreshLocation()
             })
         },
+        parseBook() {
+            this.book.loaded.cover.then(cover => {
+                this.book.archive.createUrl(cover).then(url => {
+                    this.setCover(url)
+                })
+            })
+            this.book.loaded.metadata.then(metadata => {
+                this.setMetadata(metadata)
+            })
+            this.book.loaded.navigation.then(nav => {
+                const navItem = flatten(nav.toc)
+                function find(item, level = 0) {
+                    return !item.parent ? level : find(navItem.filter(parentItem => parentItem.id === item.parent)[0], level++)
+                }
+                navItem.forEach(item => {
+                    item.level = find(item)
+                })
+                this.setNavigation(navItem)
+            })
+        },
         initGesture() {
-                this.rendition.on('touchstart', event => {
+            this.rendition.on('touchstart', event => {
                 this.touchStartX = event.changedTouches[0].clientX
                 this.touchStartTime = event.timeStamp
             })
@@ -46,8 +149,8 @@ export default {
                 } else {
                     this.toggleTitleAndMenu()
                 }
-                // event.preventDefault()
-                // event.stopPropagation()
+                event.preventDefault()
+                event.stopPropagation()
             })
         },
         initRendition() {
@@ -56,13 +159,20 @@ export default {
                 height: innerHeight,
                 method: 'default'
             })
-            const location = getLocation(this.fileName)
-            this.display(location, () => {
-                this.initTheme()
-                this.initFontSize()
-                this.initFontFamily()
-                this.initGlobalStyle()
-            })
+            this.initTheme()
+            this.initFontSize()
+            this.initFontFamily()
+            this.initGlobalStyle()
+            if (this.$route.query.navigation) {
+                this.display(this.$route.query.navigation)
+            } else {
+                const location = getLocation(this.fileName)
+                if (location) {
+                this.display(location)
+                } else {
+                this.display()
+                }
+            }
             this.rendition.hooks.content.register(contents => {
                 Promise.all([
                     contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/daysOne.css`),
@@ -125,7 +235,7 @@ export default {
             }
         },
         toggleTitleAndMenu() {
-            if (this.setMenuVisible) {
+            if (this.menuVisible) {
                 this.setSettingVisible(-1)
                 this.setFontFamilyVisible(false)
             }
@@ -135,6 +245,18 @@ export default {
 }
 </script>
 
-<style>
-
+<style lang="scss" scoped>
+.ebook-reader {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    .ebook-reader-mask {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 150;
+    }
+}
 </style>

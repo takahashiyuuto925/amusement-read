@@ -5,8 +5,14 @@ import store from './store'
 import i18n from './language'
 import './assets/styles/icon.css' // 引入字体图标
 import './assets/styles/global.scss'
+import './utils/boost'
+import './utils/create-api'
+import VueLazyload from 'vue-lazyload'
+// import './mock'
 
 Vue.config.productionTip = false
+
+Vue.use(VueLazyload, { loading: require('./assets/images/default.jpg')})
 
 new Vue({
   router,
