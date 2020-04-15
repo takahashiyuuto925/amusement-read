@@ -243,7 +243,7 @@ import { shelfMixin } from '../../utils/mixin'
               }
               this.opf = `${process.env.VUE_APP_EPUB_OPF_URL}/unzip/${this.fileName}/${rootFile}`
               this.filePath = `${process.env.VUE_APP_EPUB_OPF_URL}${data.filePath}`
-              this.parseBook(this.filePath)
+              this.parseBook(this.opf)
             } else {
               this.showToast(response.data.msg)
             }
