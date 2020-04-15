@@ -153,8 +153,19 @@ import { shelfMixin } from '../../utils/mixin'
         this.$refs.toast.show()
       },
       readBook() {
-        this.$router.push({
-          path: `/ebook/book|${this.fileName}`
+        getLocalForage(this.bookItem.fileName, (err, value) => {
+          if (!err && value instanceof Blob) {
+            this.$router.push({
+              path: `/ebook/book|${this.fileName}`
+            })
+          } else {
+            this.$router.push({
+              path: `/ebook/book|${this.fileName}`,
+              query: {
+                opf: this.opf
+              }
+            })
+          }
         })
       },
       trialListening() {
