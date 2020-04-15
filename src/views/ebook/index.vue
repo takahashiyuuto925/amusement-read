@@ -76,7 +76,7 @@
   }
 </script>
 
-<style lang="scss" rel="stylesheet/scss" scoped>
+<style lang="scss" scoped>
   @import "../../assets/styles/global";
 
   .ebook {
@@ -87,4 +87,3 @@
     height: 100%;
   }
 </style>
-s
